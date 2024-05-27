@@ -8,19 +8,13 @@ encoding: UTF-8
 followredirect: true
 # to fetch current domain use https://www.protege-torrent.com/Gktorrent
 links:
-  - https://www.gktorrent.lol/
+  - https://www.gktorrent.pm/
 legacylinks:
   - https://www.rantop.org/
-  - https://gktorrent.nocensor.work/
-  - https://gktorrent.nocensor.biz/
-  - https://www.gktorrents.org/
-  - https://gktorrent.nocensor.sbs/
-  - https://gktorrent.nocensor.world/
-  - https://gktorrent.nocensor.lol/
+  - https://www.torrent.ws/
   - https://gktorrent.mrunblock.guru/
   - https://gktorrent.mrunblock.life/
   - https://gktorrent.nocensor.click/
-  - https://www.gktorrents.cc/
   - https://www.gktorrent.ac/
   - https://www.gktorrent.ph/
   - https://www.gktorrent.vc/
@@ -31,6 +25,10 @@ legacylinks:
   - https://gktorrent.mrunblock.bond/
   - https://www.gktorrent.wtf/
   - https://www.gktorrent.vg/
+  - https://www.gktorrent.lol/
+  - https://www.gktorrent.sh/
+  - https://www.gktorrent.eu/
+  - https://www.gktorrent.xyz/
 
 caps:
   categorymappings:
@@ -97,7 +95,7 @@ search:
       args: ["(?i)(S)(\\d{1,3})$", "saison $2"]
 
   rows:
-    selector: table.table-hover > tbody > tr:has(a[onclick*="torrent/"])
+    selector: table.table-hover > tbody > tr
 
   fields:
     category:
@@ -124,7 +122,7 @@ search:
       text: "{{ if .Config.multilang }}{{ .Result.title_multilang }}{{ else }}{{ .Result.title_phase2 }}{{ end }}"
     details:
       selector: td:nth-child(1) a
-      attribute: onclick
+      attribute: href
       filters:
         - name: regexp
           args: (/?torrent/\d+)

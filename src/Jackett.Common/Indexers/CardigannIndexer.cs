@@ -172,6 +172,15 @@ namespace Jackett.Common.Indexers
                         case "info":
                             item = new DisplayInfoConfigurationItem(itemName, Setting.Default);
                             break;
+                        case "info_cookie":
+                            item = new DisplayInfoConfigurationItem("How to get the Cookie", "<ol><li>Login to this tracker with your browser</li><li>If present in the login page, ensure you have the <b>Remember me</b> ticked and the <b>Log Me Out if IP Changes</b> unticked when you login</li><li>Open the <b>DevTools</b> panel by pressing <b>F12</b></li><li>Select the <b>Network</b> tab</li><li>Click on the <b>Doc</b> button (Chrome Browser) or <b>HTML</b> button (FireFox)</li><li>Refresh the page by pressing <b>F5</b></li><li>Click on the first row entry</li><li>Select the <b>Headers</b> tab on the Right panel</li><li>Find <b>'cookie:'</b> in the <b>Request Headers</b> section</li><li><b>Select</b> and <b>Copy</b> the whole cookie string <i>(everything after 'cookie: ')</i> and <b>Paste</b> here.</li></ol>");
+                            break;
+                        case "info_flaresolverr":
+                            item = new DisplayInfoConfigurationItem("FlareSolverr", "This site may use Cloudflare DDoS Protection, therefore Jackett requires <a href=\"https://github.com/Jackett/Jackett#configuring-flaresolverr\" target=\"_blank\">FlareSolverr</a> to access it.");
+                            break;
+                        case "info_useragent":
+                            item = new DisplayInfoConfigurationItem("How to get the User-Agent", "<ol><li>From the same place you fetched the cookie,</li><li>Find <b>'user-agent:'</b> in the <b>Request Headers</b> section</li><li><b>Select</b> and <b>Copy</b> the whole user-agent string <i>(everything after 'user-agent: ')</i> and <b>Paste</b> here.</li></ol>");
+                            break;
                         default:
                             throw new Exception($"Invalid setting type '{Setting.Type}' specified.");
                     }
@@ -1398,6 +1407,22 @@ namespace Jackett.Common.Indexers
             variables[".Query.Author"] = query.Author;
             variables[".Query.Title"] = query.Title;
             variables[".Query.Publisher"] = query.Publisher;
+            // boolean queries
+            variables[".Query.IsBookSearch"] = query.IsBookSearch ? "True" : null;
+            variables[".Query.IsDoubanQuery"] = query.IsDoubanQuery ? "True" : null;
+            variables[".Query.IsGenreQuery"] = query.IsGenreQuery ? "True" : null;
+            variables[".Query.IsIdSearch"] = query.IsIdSearch ? "True" : null;
+            variables[".Query.IsImdbQuery"] = query.IsImdbQuery ? "True" : null;
+            variables[".Query.IsMovieSearch"] = query.IsMovieSearch ? "True" : null;
+            variables[".Query.IsMusicSearch"] = query.IsMusicSearch ? "True" : null;
+            variables[".Query.IsRssSearch"] = query.IsRssSearch ? "True" : null;
+            variables[".Query.IsSearch"] = query.IsSearch ? "True" : null;
+            variables[".Query.IsTVRageQuery"] = query.IsTVRageQuery ? "True" : null;
+            variables[".Query.IsTVSearch"] = query.IsTVSearch ? "True" : null;
+            variables[".Query.IsTmdbQuery"] = query.IsTmdbQuery ? "True" : null;
+            variables[".Query.IsTraktQuery"] = query.IsTraktQuery ? "True" : null;
+            variables[".Query.IsTvdbQuery"] = query.IsTvdbQuery ? "True" : null;
+            variables[".Query.IsTvmazeQuery"] = query.IsTvmazeQuery ? "True" : null;
 
             var mappedCategories = MapTorznabCapsToTrackers(query);
             if (mappedCategories.Count == 0)
@@ -2109,13 +2134,18 @@ namespace Jackett.Common.Indexers
 
         private Dictionary<string, string> ParseCustomHeaders(Dictionary<string, List<string>> customHeaders, Dictionary<string, object> variables)
         {
+            var headers = new Dictionary<string, string>();
+
             if (customHeaders == null)
-                return null;
+            {
+                return headers;
+            }
 
             // FIXME: fix jackett header handling (allow it to specifiy the same header multipe times)
-            var headers = new Dictionary<string, string>();
             foreach (var header in customHeaders)
+            {
                 headers.Add(header.Key, applyGoTemplateText(header.Value[0], variables));
+            }
 
             return headers;
         }
@@ -2172,34 +2202,52 @@ namespace Jackett.Common.Indexers
                 case "category":
                     if (FieldModifiers.Contains("noappend"))
                     {
-                        logger.Warn($"CardigannIndexer ({Id}): The \"noappend\" modifier is deprecated. Please switch to \"default\". See the Definition Format in the Wiki for more information.");
+                        logger.Warn("CardigannIndexer ({0}): The \"noappend\" modifier is deprecated. Please switch to \"default\". See the Definition Format in the Wiki for more information.", Id);
                     }
 
                     var cats = MapTrackerCatToNewznab(value);
+
                     if (cats.Any())
                     {
-                        if (release.Category == null || FieldModifiers.Contains("noappend"))
-                            release.Category = cats;
-                        else
-                            release.Category = release.Category.Union(cats).ToList();
+                        release.Category = release.Category == null || FieldModifiers.Contains("noappend")
+                            ? cats
+                            : release.Category.Union(cats).ToList();
                     }
-                    value = release.Category.ToString();
+
+                    if (value.IsNotNullOrWhiteSpace() && !release.Category.Any())
+                    {
+                        logger.Warn("[{0}] Invalid category for value: '{1}'", Id, value);
+                    }
+                    else
+                    {
+                        value = release.Category.ToString();
+                    }
+
                     break;
                 case "categorydesc":
                     if (FieldModifiers.Contains("noappend"))
                     {
-                        logger.Warn($"CardigannIndexer ({Id}): The \"noappend\" modifier is deprecated. Please switch to \"default\". See the Definition Format in the Wiki for more information.");
+                        logger.Warn("CardigannIndexer ({0}): The \"noappend\" modifier is deprecated. Please switch to \"default\". See the Definition Format in the Wiki for more information.", Id);
                     }
 
                     var catsDesc = MapTrackerCatDescToNewznab(value);
+
                     if (catsDesc.Any())
                     {
-                        if (release.Category == null || FieldModifiers.Contains("noappend"))
-                            release.Category = catsDesc;
-                        else
-                            release.Category = release.Category.Union(catsDesc).ToList();
+                        release.Category = release.Category == null || FieldModifiers.Contains("noappend")
+                            ? catsDesc
+                            : release.Category.Union(catsDesc).ToList();
                     }
-                    value = release.Category.ToString();
+
+                    if (value.IsNotNullOrWhiteSpace() && !release.Category.Any())
+                    {
+                        logger.Warn("[{0}] Invalid category for value: '{1}'", Id, value);
+                    }
+                    else
+                    {
+                        value = release.Category.ToString();
+                    }
+
                     break;
                 case "size":
                     release.Size = ParseUtil.GetBytes(value);
@@ -2349,6 +2397,18 @@ namespace Jackett.Common.Indexers
 
                             if (query.TvdbID != null && TorznabCaps.TvSearchTvdbAvailable)
                                 break; // skip andmatch filter for tvdb searches
+
+                            if (query.DoubanID != null && (TorznabCaps.MovieSearchImdbAvailable || TorznabCaps.TvSearchImdbAvailable))
+                                break; // skip andmatch filter for douban searches
+
+                            if (query.TraktID != null && (TorznabCaps.MovieSearchImdbAvailable || TorznabCaps.TvSearchImdbAvailable))
+                                break; // skip andmatch filter for trakt searches
+
+                            if (query.TvmazeID != null && TorznabCaps.TvSearchImdbAvailable)
+                                break; // skip andmatch filter for tvmaze searches
+
+                            if (query.RageID != null && TorznabCaps.TvSearchImdbAvailable)
+                                break; // skip andmatch filter for tvmaze searches
 
                             var queryKeywords = variables[".Keywords"] as string;
 

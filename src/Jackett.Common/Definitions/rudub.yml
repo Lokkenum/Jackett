@@ -5,16 +5,40 @@ description: "RUDUB (ex-BaibaKoTV) is a RUSSIAN Semi-Private Torrent Tracker for
 language: ru-RU
 type: semi-private
 encoding: windows-1251
+followredirect: true
 links:
-  - https://rudub.xyz/
+  - https://27may.rudub.online/
 legacylinks:
-  - http://baibako.tv/
-  - https://baibako.tv/
-  - http://bko.baibako.tv/
-  - http://rudub.tv/ # redirects to *.net
-  - http://rudub.co/
-  - https://rudub.net/
-  - https://rudub.pw/
+  - https://rudub.online/
+  - https://28april.rudub.online/
+  - https://29april.rudub.online/
+  - https://30april.rudub.online/
+  - https://01may.rudub.online/
+  - https://02may.rudub.online/
+  - https://03may.rudub.online/
+  - https://04may.rudub.online/
+  - https://05may.rudub.online/
+  - https://06may.rudub.online/
+  - https://07may.rudub.online/
+  - https://08may.rudub.online/
+  - https://09may.rudub.online/
+  - https://10may.rudub.online/
+  - https://11may.rudub.online/
+  - https://12may.rudub.online/
+  - https://13may.rudub.online/
+  - https://14may.rudub.online/
+  - https://15may.rudub.online/
+  - https://16may.rudub.online/
+  - https://17may.rudub.online/
+  - https://18may.rudub.online/
+  - https://19may.rudub.online/
+  - https://20may.rudub.online/
+  - https://21may.rudub.online/
+  - https://22may.rudub.online/
+  - https://23may.rudub.online/
+  - https://24may.rudub.online/
+  - https://25may.rudub.online/
+  - https://26may.rudub.online/
 
 caps:
   categorymappings:
@@ -70,7 +94,7 @@ login:
   error:
     - selector: div.login2
   test:
-    path: /
+    path: browse.php
     selector: a[href="logout.php"]
 
 search:

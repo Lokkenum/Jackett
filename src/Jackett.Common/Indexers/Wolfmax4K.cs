@@ -18,6 +18,7 @@ using Jackett.Common.Services.Interfaces;
 using Jackett.Common.Utils.Clients;
 using Newtonsoft.Json.Linq;
 using NLog;
+using static Jackett.Common.Models.IndexerConfig.ConfigurationData;
 using WebClient = Jackett.Common.Utils.Clients.WebClient;
 
 namespace Jackett.Common.Indexers
@@ -57,6 +58,7 @@ namespace Jackett.Common.Indexers
                    cacheService: cs,
                    configData: new ConfigurationData())
         {
+            configData.AddDynamic("flaresolverr", new DisplayInfoConfigurationItem("FlareSolverr", "This site may use Cloudflare DDoS Protection, therefore Jackett requires <a href=\"https://github.com/Jackett/Jackett#configuring-flaresolverr\" target=\"_blank\">FlareSolverr</a> to access it."));
             // avoid Cloudflare too many requests limiter
             webclient.requestDelay = 2.1;
         }
@@ -109,9 +111,14 @@ namespace Jackett.Common.Indexers
 
             var maxPages = query.SearchTerm.IsNullOrWhiteSpace() ? 1 : 3;
 
+            if (query.SearchTerm.IsNullOrWhiteSpace())
+            {
+                query.SearchTerm = "%";
+            }
+
             for (var i = 1; i <= maxPages; i++)
             {
-                var result = await DoSeachAsync(query, searchToken, i);
+                var result = await DoSearchAsync(query, searchToken, i);
                 try
                 {
                     // Parse results
@@ -143,7 +150,7 @@ namespace Jackett.Common.Indexers
         {
             var wmPage = await RequestWithCookiesAndRetryAsync(link.ToString(), emulateBrowser: false);
             var wmDoc = new HtmlParser().ParseDocument(wmPage.ContentString);
-            var enlacitoUrl = wmDoc.QuerySelector(".app-message a")?.GetAttribute("href");
+            var enlacitoUrl = wmDoc.QuerySelector(".app-message a:not(.buttonPassword)")?.GetAttribute("href");
 
             var enlacitoPage = await RequestWithCookiesAndRetryAsync(enlacitoUrl, emulateBrowser: false, referer: SiteLink);
             var enlacitoDoc = new HtmlParser().ParseDocument(enlacitoPage.ContentString);
@@ -175,7 +182,7 @@ namespace Jackett.Common.Indexers
             return myDoc.QuerySelector("input[name='token']")?.GetAttribute("value");
         }
 
-        private async Task<WebResult> DoSeachAsync(TorznabQuery query, string searchToken, int page = 1)
+        private async Task<WebResult> DoSearchAsync(TorznabQuery query, string searchToken, int page = 1)
         {
             var body = new Dictionary<string, string>
             {
@@ -206,7 +213,7 @@ namespace Jackett.Common.Indexers
             // replace punctuation symbols with spaces
             // searchTerm = Marco Polo 2014
             searchTerm = Regex.Replace(searchTerm, @"[-._\(\)@/\\\[\]\+\%]", " ");
-            searchTerm = Regex.Replace(searchTerm, @"\s+", " ");
+            searchTerm = Regex.Replace(searchTerm, @"\s+", "+");
             searchTerm = searchTerm.Trim();
 
             // we parse the year and remove it from search

@@ -8,17 +8,13 @@ encoding: UTF-8
 followredirect: true
 # to fetch current domain use https://www.protege-torrent.com/Torrent9
 links:
-  - https://www.torrent9.gy/
+  - https://www.torrent9.tel/
   - https://torrent9.unblockninja.com/
 legacylinks:
   - https://www.protege-liens.net/
   - https://www.rantop.org/
+  - https://www.torrent.ws/
   - https://torrent9.nocensor.click/
-  - https://ww2.torrent9.moe/
-  - https://wwv.torrent9.moe/
-  - https://www.torrent9.pro/
-  - https://www.torrent9.gs/
-  - https://www.torrent9.ps/
   - https://www.torrent9.ms/
   - https://www.torrent9.ink/
   - https://www.torrent9.sk/
@@ -31,6 +27,11 @@ legacylinks:
   - https://www.torrent9.kim/
   - https://www.torrent9.mn/
   - https://www.torrent9.city/
+  - https://www.torrent9.gy/
+  - https://www.torrent9.sbs/
+  - https://www.torrent9.sb/
+  - https://www.torrent9.tf/
+  - https://www.torrent9.day/
 
 caps:
   categorymappings:
@@ -58,10 +59,8 @@ caps:
   allowrawsearch: true
 
 settings:
-  - name: flaresolverr
-    type: info
-    label: FlareSolverr
-    default: This site may use Cloudflare DDoS Protection, therefore Jackett requires <a href="https://github.com/Jackett/Jackett#configuring-flaresolverr" target="_blank">FlareSolverr</a> to access it.
+  - name: info_flaresolverr
+    type: info_flaresolverr
   - name: multilang
     type: checkbox
     label: Replace MULTi by another language in release name
@@ -127,12 +126,22 @@ search:
           args: ["(?i)\\b(MULTI(?!.*(?:FRENCH|ENGLISH|VOSTFR)))\\b", "{{ .Config.multilanguage }}"]
     title:
       text: "{{ if .Config.multilang }}{{ .Result.title_multilang }}{{ else }}{{ .Result.title_phase2 }}{{ end }}"
-    details:
-      selector: td:nth-child(1) a
-      attribute: onclick
+    details_href:
+      selector: td:nth-child(1) a[href]
+      attribute: href
+      optional: true
       filters:
         - name: regexp
           args: (/?torrent/\d+)
+    details_onclick:
+      selector: td:nth-child(1) a[onclick]
+      attribute: onclick
+      optional: true
+      filters:
+        - name: regexp
+          args: (/?torrent/\d+)
+    details:
+      text: "{{ or .Result.details_href .Result.details_onclick }}"
     download:
       text: "{{ .Result.details }}"
     date:

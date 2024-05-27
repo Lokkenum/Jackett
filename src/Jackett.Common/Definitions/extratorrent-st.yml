@@ -7,14 +7,9 @@ type: public
 encoding: UTF-8
 links:
   - https://extratorrent.st/
-  - https://extratorrent.unblockit.africa/
   - https://extratorrent.ninjaproxy1.com/
   - https://extratorrent.proxyninja.org/
 legacylinks:
-  - https://extratorrent.nocensor.lol/
-  - https://extratorrent.unblockit.ink/
-  - https://extratorrent.nocensor.art/
-  - https://extratorrent.unblockit.bio/
   - https://extratorrent.unblockit.boo/
   - https://extratorrent.mrunblock.guru/
   - https://extratorrent.unblockit.click/
@@ -22,7 +17,6 @@ legacylinks:
   - https://extratorrent.unblockit.mov/
   - https://extratorrent.mrunblock.life/
   - https://extratorrent.unblockit.rsvp/
-  - https://extratorrent.nocensor.click/
   - https://extratorrent.unblockit.vegas/
   - https://extratorrent.unblockit.esq/
   - https://extratorrent.unblockit.zip/
@@ -32,6 +26,10 @@ legacylinks:
   - https://extratorrent.nocensor.cloud/
   - https://extratorrent.unblockit.date/
   - https://extratorrent.unblockit.dad/
+  - https://extratorrent.unblockit.africa/
+  - https://extratorrent.unblockit.casa/ # 502
+  - https://unblockit.sbs/ # 502
+  - https://unblockit.ong/ # 502
 
 caps:
   categorymappings:
@@ -87,7 +85,9 @@ caps:
     music-search: [q]
     book-search: [q]
 
-settings: []
+settings:
+  - name: info_flaresolverr
+    type: info_flaresolverr
 
 search:
   paths:

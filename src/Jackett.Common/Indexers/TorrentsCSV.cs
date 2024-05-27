@@ -93,6 +93,7 @@ namespace Jackett.Common.Indexers
                     MagnetUri = new Uri("magnet:?xt=urn:btih:3333333333333333333333333333333333333333"), // unknown torrent
                     Category = new List<int> { TorznabCatType.Other.ID },
                     PublishDate = new DateTime(),
+                    Size = 0,
                     Grabs = 0,
                     Seeders = 0,
                     Peers = 0,
@@ -140,7 +141,7 @@ namespace Jackett.Common.Indexers
                     var release = new ReleaseInfo
                     {
                         Title = title,
-                        Details = new Uri($"{SiteLink.TrimEnd('/')}/search/{title}"), // there is no details link
+                        Details = new Uri($"{SiteLink}search/{title}"), // there is no details link
                         Guid = new Uri($"magnet:?xt=urn:btih:{infoHash}"),
                         InfoHash = infoHash, // magnet link is auto generated from infohash
                         Category = new List<int> { TorznabCatType.Other.ID },

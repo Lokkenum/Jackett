@@ -1,33 +1,36 @@
 ---
-id: movieworld
-name: MovieWorld
-description: "MovieWorld (Flicker) is a Semi-Private Torrent Tracker for MOVIES / TV / 3X"
+id: irishtv
+name: IrishTV
+description: "IrishTV (ITV) is an IRISH Private Torrent Tracker for MOVIES / TV / GENERAL"
 language: en-US
-type: semi-private
+type: private
 encoding: UTF-8
 links:
-  - https://movieworld.pics/
+  - http://irishtv.xyz/
 
 caps:
   categorymappings:
-    - {id: 37, cat: Movies, desc: "Freeleech"}
-    - {id: 14, cat: Movies/WEB-DL, desc: "Movie/WeBRip"}
-    - {id: 5, cat: Movies/UHD, desc: "Movie/4K Rip"}
-    - {id: 7, cat: Movies/BluRay, desc: "Movie/BluRay Rip"}
-    - {id: 34, cat: Movies, desc: "Movie/Other"}
-    - {id: 15, cat: Movies, desc: "Movie/Packs"}
-    - {id: 20, cat: Movies/SD, desc: "Movie/CAM/HDRip"}
-    - {id: 21, cat: XXX, desc: "Movie/XXX"}
-    - {id: 28, cat: TV, desc: "Tv Packs"}
-    - {id: 31, cat: TV, desc: "Tv Mini Series"}
-    - {id: 30, cat: TV/HD, desc: "Tv Episodes"}
-    - {id: 26, cat: TV/Sport, desc: "Tv Sport"}
-    - {id: 41, cat: Movies, desc: "Freeleech"}
+    - {id: 1, cat: TV, desc: "Comedy"}
+    - {id: 2, cat: TV, desc: "Drama"}
+    - {id: 3, cat: TV, desc: "Documentary"}
+    - {id: 6, cat: TV, desc: "Entertainment"}
+    - {id: 4, cat: TV, desc: "Lifestyle"}
+    - {id: 7, cat: TV, desc: "Kids"}
+    - {id: 8, cat: TV, desc: "Culture"}
+    - {id: 9, cat: TV, desc: "Science & Nature"}
+    - {id: 12, cat: TV/Sport, desc: "Sport"}
+    - {id: 13, cat: TV, desc: "News Current Affairs"}
+    - {id: 14, cat: TV, desc: "Classics"}
+    - {id: 17, cat: TV, desc: "Crime"}
+    - {id: 16, cat: TV, desc: "Boxsets"}
+    - {id: 18, cat: Audio, desc: "Music"}
+    - {id: 19, cat: Movies, desc: "Film"}
 
   modes:
     search: [q]
     tv-search: [q, season, ep]
     movie-search: [q]
+    music-search: [q]
 
 settings:
   - name: username
@@ -38,7 +41,7 @@ settings:
     label: Password
   - name: freeleech
     type: checkbox
-    label: Search freeleech only
+    label: Filter freeleech only
     default: false
   - name: sort
     type: select
@@ -75,14 +78,15 @@ login:
 
 search:
   paths:
-    # https://movieworld.pics/index.php?page=torrents&search=&category=0&active=0
+    # http://irishtv.xyz/index.php?page=torrents&search=&category=0&active=0
     - path: index.php
   inputs:
     page: torrents
     search: "{{ .Keywords }}"
     category: "{{ range .Categories }}{{.}};{{end}}"
     # 0 filename, 1 file&descr, 2 descr, 3 uploaders, 18 genre, 4 imdb, 5 gold, 6 silver, 7 bronze, 8-17 upload multiplier 1x-10x
-    options: "{{ if .Config.freeleech }}5{{ else }}0{{ end }}"
+    # note the options are exclusive, so searching for gold means the search keywords are ignored
+    options: 0
     # 0 all, 1 active only, 2 dead only
     active: 0
     order: "{{ .Config.sort }}"
@@ -94,7 +98,7 @@ search:
       args: ["\\.", " "]
 
   rows:
-    selector: "table.lista > tbody > tr:has(a[href^=\"download.php?id=\"]):not(:has(a[href^=\"index.php?page=userdetails\"]))"
+    selector: "table.lista > tbody > tr:has(a[href^=\"download.php?id=\"]):not(:has(a[href^=\"index.php?page=userdetails\"])){{ if .Config.freeleech }}:has(img[src$=\"gold.gif\"]){{ else }}{{ end }}, able.lista > tbody > tr:has(a[href^=\"download.php?id=\"]):not(:has(a[href^=\"index.php?page=userdetails\"])){{ if .Config.freeleech }}:has(img[src$=\"freeleech.gif\"]){{ else }}{{ end }}"
 
   fields:
     category:
@@ -146,6 +150,7 @@ search:
       selector: "td:has(a[href^=\"download.php?id=\"]) ~ td ~ td ~ td ~ td ~ td ~ td"
     downloadvolumefactor:
       case:
+        img[src="images/freeleech.gif"]: 0
         img[src="images/gold.gif"]: 0
         img[src="images/silver.gif"]: 0.5
         img[src="images/bronze.gif"]: 0.75
@@ -162,7 +167,9 @@ search:
         img[src="images/9x.gif"]: 9
         img[src="images/10x.gif"]: 10
         "*": 1
+    minimumratio:
+      text: 1.5
     minimumseedtime:
-      # 3 days (as seconds = 3 x 24 x 60 x 60)
+      # 7 days (as seconds = 7 x 24 x 60 x 60)
       text: 259200
 #  xbtitFM v4.1.28

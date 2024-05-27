@@ -13,6 +13,7 @@ legacylinks:
 
 caps:
   categorymappings:
+    - {id: 85, cat: TV/Anime, desc: "Anime/Cartoon 4K"}
     - {id: 28, cat: TV/Anime, desc: "Anime/Cartoon HD"}
     - {id: 47, cat: TV/Anime, desc: "Anime/Cartoon HDTV"}
     - {id: 48, cat: TV/Anime, desc: "Anime/Cartoon SD"}
@@ -106,11 +107,15 @@ settings:
     options:
       desc: desc
       asc: asc
+  - name: info_activity
+    type: info
+    label: Account Inactivity
+    default: "Accounts inactive for more than 45 days are automatically deleted."
 
 login:
-  path: account-login.php
+  path: login.php
   method: form
-  form: form[action="account-login.php"]
+  form: form[action="login.php"]
   captcha:
     type: image
     selector: img[src="captcha.php?ext=.gif"]
